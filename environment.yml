@@ -1,0 +1,20 @@
+name: amo_rayan_gym
+channels:
+  - conda-forge
+  - defaults
+
+dependencies:
+  - python=3.7
+  - matplotlib
+  # Core scientific python
+  - numpy
+  - earthpy
+  # Reiforcement Learning algorithms
+  - gym 
+  - stable_baselines3
+  - tensorflow
+  # Technical analysis for features
+  - ta
+  # MetaTrader5 and timezone helper
+  - MetaTrader5
+  - pytz
