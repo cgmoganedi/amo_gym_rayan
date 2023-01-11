@@ -1,2 +1,2 @@
-# amo_gym_rayan
+# Amo Gym Rayan
 Applied Reinforcement Learning for Finance Blueprint
