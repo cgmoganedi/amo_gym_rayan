@@ -209,7 +209,7 @@ class AmoGymEnv(gym.Env):
             if (abs(actions[i]) >= threshold * 0.5) and (abs(actions[i]) <= threshold * 0.8):
                 # close all the open positions of this currency pair
                 symbol = self.symbols[i]
-                success, profit = self.close_all_open_positions(symbol)
+                success, profit = self._close_all_open_positions(symbol)
                 if not success:
                     print('Failed: ', _mt5.last_error())
                     # raise ValueError('Failed to close a trade!')
@@ -218,7 +218,7 @@ class AmoGymEnv(gym.Env):
             elif actions[i] >= threshold:
                 # close the all the open sell positions of this currency pair and open a buy
                 symbol = self.symbols[i]
-                success, ticket_id = self.open_position(i, order_type=_mt5.ORDER_TYPE_BUY, lot_multiplier=abs(actions[i]))
+                success, ticket_id = self._open_position(i, order_type=_mt5.ORDER_TYPE_BUY, lot_multiplier=abs(actions[i]))
                 if not success:
                     print('Failed: ', _mt5.last_error())
                     # raise ValueError('Failed to open a buy trade!')
@@ -227,7 +227,7 @@ class AmoGymEnv(gym.Env):
             elif actions[i] <= neg_threshold:
                 # close the all the open buy positions of this currency pair and open a buy
                 symbol = self.symbols[i]
-                success, ticket_id = self.open_position(i, order_type=_mt5.ORDER_TYPE_SELL, lot_multiplier=abs(actions[i]))
+                success, ticket_id = self._open_position(i, order_type=_mt5.ORDER_TYPE_SELL, lot_multiplier=abs(actions[i]))
                 if not success:
                     print('Failed: ', _mt5.last_error())
                     # raise ValueError('Failed to open a sell trade!')
