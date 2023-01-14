@@ -5,7 +5,7 @@ import os
 import time
 
 models_dir = f'models/rayan/SAC-{int(time.time())}'
-logdir = 'log'
+logdir = f'logs/rayan/SAC-{int(time.time())}'
 
 def learnSAC(env, total_ts=1000) -> str:
     model_path = ''
