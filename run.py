@@ -41,7 +41,7 @@ def main():
     print('Rayan starting ...')
     rayan = Rayan()
     if not rayan.learned: 
-        rayan.learn(env, 500)
+        rayan.learn(env, 1000)
 
     rayan_policy = rayan.policy_learned()
     
