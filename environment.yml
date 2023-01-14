@@ -1,4 +1,4 @@
-name: amo_rayan_gym
+name: amo_gym_rayan
 channels:
   - conda-forge
   - defaults
@@ -8,7 +8,7 @@ dependencies:
   - matplotlib
   # Core scientific python
   - numpy
-  - earthpy
+  - pandas
   # Reiforcement Learning algorithms
   - gym 
   - stable_baselines3
@@ -17,4 +17,3 @@ dependencies:
   - ta
   # MetaTrader5 and timezone helper
   - MetaTrader5
-  - pytz
