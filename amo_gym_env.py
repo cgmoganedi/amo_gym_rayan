@@ -276,7 +276,7 @@ class AmoGymEnv(gym.Env):
             "deviation": 20,
             "magic": 992,
             "type_time": _mt5.ORDER_TIME_GTC,
-            "type_filling": _mt5.ORDER_FILLING_IOC
+            "type_filling": _mt5.ORDER_FILLING_DEFAULT
         }
 
         # send a trading request

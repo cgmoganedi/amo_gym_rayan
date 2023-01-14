@@ -46,7 +46,7 @@ def main():
     rayan_policy = rayan.policy_learned()
     
     # evaluate the models over 50 episodes
-    mean_reward_rayan, std_reward_rayan = evaluate_policy(rayan_policy, env, n_eval_episodes=100)
+    mean_reward_rayan, std_reward_rayan = evaluate_policy(rayan_policy, env, n_eval_episodes=50)
 
     print(f"Rayan mean reward: {mean_reward_rayan:.2f} +/- {std_reward_rayan:.2f}")
 
