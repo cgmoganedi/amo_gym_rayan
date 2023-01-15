@@ -11,19 +11,24 @@ def learnSAC(env, total_ts=1000) -> str:
     model_path = ''
     n_divisions = 10
     save_step = int(total_ts/n_divisions)
+    
+    # create the reinforcement learning model
+    modelOptimalPolicy = SAC('MlpPolicy', env, verbose=1, tensorboard_log=logdir)
     for i in range(1, n_divisions):
-        # 1 - create the reinforcement learning model and 2 - train the model for total_ts episodes
-        modelOptimalPolicy = SAC('MlpPolicy', env, verbose=1, tensorboard_log=logdir).learn(total_timesteps=save_step, reset_num_timesteps=False, tb_log_name=f'SAC-{int(time.time())}')
-        # Save the trained agent to disk
+        # train the model for total_ts episodes
+        modelOptimalPolicy.learn(total_timesteps=save_step, reset_num_timesteps=False, tb_log_name='SAC')
+        
+        # define path to save at
         model_name = str(save_step * i) + '_ts_at_' + str(datetime.now()).split(' ')[0]
-        model_name = model_name.replace(" ", "_").replace(":", "_").replace(".", "_")
         model_path = f'{models_dir}/{model_name}'
+        
+        # Save the trained agent to disk
         modelOptimalPolicy.save(path=model_path)
     return model_path
 
 class Rayan:
     def __init__(self, name=None) -> None:
-        self.model_name = name
+        self.model_path = name
         self.learned = True if name else False
         
         if not os.path.exists(models_dir):
@@ -33,12 +38,12 @@ class Rayan:
             os.makedirs(logdir)
     
     def learn(self, env, total_ts=1000):
-        if self.model_name:
-            return self.model_name
-        self.model_name = learnSAC(env, total_ts)
+        if self.model_path:
+            return self.model_path
+        self.model_path = learnSAC(env, total_ts)
         self.learned = True
-        return self.model_name
+        return self.model_path
     
     def policy_learned(self):
-        return SAC.load(self.model_name)
+        return SAC.load(self.model_path)
     
