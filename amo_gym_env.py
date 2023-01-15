@@ -10,7 +10,7 @@ from ta.trend import CCIIndicator
 from datetime import datetime
 
 
-def strategy_group_A(df)-> pd.DataFrame:
+def strategy_group(df)-> pd.DataFrame:
     # Initialize Bollinger Bands and CCI Indicators
     indicator_bb = BollingerBands(close=df['close'], window=26, window_dev=2, fillna=True)
     indicator_cci = CCIIndicator(high=df['high'], low=df['low'], close=df['close'], window=26, constant=.015, fillna=True)
@@ -167,7 +167,7 @@ class AmoGymEnv(gym.Env):
         strategy_signal_features = pd.DataFrame()
         signal_space_arr = [] # np.zeros((self.observation_shape))
         # fetch the 1-minute forex data for the specified currency pairs
-        for i, symbol in enumerate(self.symbols):
+        for symbol in self.symbols:
             # get the data from MetaTrader5
             candlestick_data = _mt5.copy_rates_from(symbol, self.time_frame, now, timesteps_from_now)
 
@@ -175,12 +175,8 @@ class AmoGymEnv(gym.Env):
             df = pd.DataFrame(candlestick_data)
             df.drop(['tick_volume', 'spread', 'real_volume'], axis='columns', inplace=True, errors='ignore')
             df = df.iloc[::-1]
-            
-            if self.tech_indicator_strategy_group == 'GROUP_A':
-                strategy_signal_features = strategy_group_A(df)
-            else:
-                strategy_signal_features = strategy_group_A(df)
-            
+            # Get features from given timeseries df
+            strategy_signal_features = strategy_group(df)
             # set the 'time' column as the index
             strategy_signal_features.set_index("time", inplace=True)
             signal_space_arr.append(strategy_signal_features.values)
@@ -241,14 +237,15 @@ class AmoGymEnv(gym.Env):
         
         
     def _open_position(self, symbol_id, order_type, lot_multiplier=0.0):
-        sl = 260
-        symbol = self.symbols[symbol_id]
-        point = _mt5.symbol_info(symbol).point
-        price = _mt5.symbol_info_tick(symbol).ask
         
+        symbol = self.symbols[symbol_id]
         open_positions = _mt5.positions_get(symbol=symbol)
         if len(open_positions) >= 7:
             return True, 0.0
+        
+        point = _mt5.symbol_info(symbol).point
+        price = _mt5.symbol_info_tick(symbol).ask
+        sl = 260
         
         stop_loss = price - sl * point
         take_profit = price + 1250 * point
@@ -258,9 +255,11 @@ class AmoGymEnv(gym.Env):
             take_profit = price - 1250 * point
             
         lot = 0.01
-        if lot_multiplier >= 0.96:
+        if lot_multiplier >= 0.97:
+            lot *= 12
+        elif lot_multiplier >= 0.93:
             lot *= 9
-        elif lot_multiplier >= 0.92:
+        elif lot_multiplier >= 0.90:
             lot *= 6
         elif lot_multiplier >= 0.88:
             lot *= 3
@@ -276,7 +275,7 @@ class AmoGymEnv(gym.Env):
             "deviation": 20,
             "magic": 992,
             "type_time": _mt5.ORDER_TIME_GTC,
-            "type_filling": _mt5.ORDER_FILLING_DEFAULT
+            "type_filling": _mt5.ORDER_FILLING_FOK
         }
 
         # send a trading request

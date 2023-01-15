@@ -4,18 +4,18 @@ from stable_baselines3 import SAC
 import os
 import time
 
-models_dir = f'models/rayan/SAC-{int(time.time())}'
-logdir = f'logs/rayan/SAC-{int(time.time())}'
+models_dir = f'models/SAC-{int(time.time())}'
+logdir = f'logs/SAC-{int(time.time())}'
 
 def learnSAC(env, total_ts=1000) -> str:
     model_path = ''
     n_divisions = 10
     save_step = int(total_ts/n_divisions)
     for i in range(1, n_divisions):
-        # 1 - create the reinforcement learning model and 2 - train the model for 2880 episaodes
-        modelOptimalPolicy = SAC('MlpPolicy', env, verbose=1, tensorboard_log=logdir).learn(total_timesteps=save_step, reset_num_timesteps=False, tb_log_name='rayan_SAC')
+        # 1 - create the reinforcement learning model and 2 - train the model for total_ts episodes
+        modelOptimalPolicy = SAC('MlpPolicy', env, verbose=1, tensorboard_log=logdir).learn(total_timesteps=save_step, reset_num_timesteps=False, tb_log_name=f'SAC-{int(time.time())}')
         # Save the trained agent to disk
-        model_name = str(save_step * i) + '_ts_at_' + str(datetime.now()).split('')[0]
+        model_name = str(save_step * i) + '_ts_at_' + str(datetime.now()).split(' ')[0]
         model_name = model_name.replace(" ", "_").replace(":", "_").replace(".", "_")
         model_path = f'{models_dir}/{model_name}'
         modelOptimalPolicy.save(path=model_path)
