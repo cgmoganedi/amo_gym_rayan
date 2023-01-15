@@ -1,19 +1,28 @@
 
 from datetime import datetime
 from stable_baselines3 import SAC
+from stable_baselines3.common.vec_env import DummyVecEnv
+from stable_baselines3.common.monitor import Monitor
 import os
 import time
 
 models_dir = f'models/SAC-{int(time.time())}'
 logdir = f'logs/SAC-{int(time.time())}'
 
+
+
+
 def learnSAC(env, total_ts=1000) -> str:
     model_path = ''
     n_divisions = 10
     save_step = int(total_ts/n_divisions)
     
+    #vec_env = DummyVecEnv([lambda:env])
+    monitor = Monitor(env, logdir, allow_early_resets=True)
+    vec_env = monitor
+    
     # create the reinforcement learning model
-    modelOptimalPolicy = SAC('MlpPolicy', env, verbose=1, tensorboard_log=logdir)
+    modelOptimalPolicy = SAC('MlpPolicy', vec_env, verbose=1, tensorboard_log=logdir)
     for i in range(1, n_divisions):
         # train the model for total_ts episodes
         modelOptimalPolicy.learn(total_timesteps=save_step, reset_num_timesteps=False, tb_log_name='SAC')
@@ -24,6 +33,10 @@ def learnSAC(env, total_ts=1000) -> str:
         
         # Save the trained agent to disk
         modelOptimalPolicy.save(path=model_path)
+    
+        
+    vec_env.close()
+    monitor.close()
     return model_path
 
 class Rayan:
